@@ -227,3 +227,17 @@ MIT License — mach damit was du willst! 🤘
 [![GitHub stars](https://img.shields.io/github/stars/GmhF3NiX/Pi-Bluetooth-Wlan-Radio?style=social)](https://github.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radio/stargazers)
 
 </div>
+
+---
+
+<div align="center">
+
+## ☕ Support
+
+Wenn dir das Projekt gefällt und du mich unterstützen möchtest:
+
+[![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-ff0000?style=for-the-badge&logo=paypal)](https://paypal.me/rapidr3dde)
+
+**Danke! 🤘**
+
+</div>
