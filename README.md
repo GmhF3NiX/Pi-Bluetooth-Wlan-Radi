@@ -1,2 +1,2 @@
-# Pi-Bluetooth-Wlan-Radi
-Pi-Bluetooth-Wlan-Radi
+# Pi-Bluetooth-Wlan-Radio
+Pi-Bluetooth-Wlan-Radio
