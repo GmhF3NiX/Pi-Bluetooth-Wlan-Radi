@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbinde...</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;color:#ccc;font-family:'JetBrains Mono',monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;}
+body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ff0000,#00ffcc,#ff0000,transparent);box-shadow:0 0 8px #ff0000;}
+.box{max-width:360px;width:100%;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:56px;color:#fff;letter-spacing:4px;text-shadow:0 0 8px #ff0000;}
+h1 span{color:#ff0000;}
+.ssid{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#00ffcc;letter-spacing:2px;margin-bottom:32px;text-shadow:0 0 6px rgba(0,255,204,0.7);}
+.spinner{width:50px;height:50px;border:2px solid #1a0000;border-top-color:#ff0000;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 24px;box-shadow:0 0 10px rgba(255,0,0,0.3);}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status{font-size:11px;color:#444;margin-bottom:8px;letter-spacing:2px;}
+.info-box{background:#0a0a0a;border:1px solid #1a0000;border-left:2px solid #ff0000;border-radius:4px;padding:16px;margin-top:24px;text-align:left;}
+.step{display:flex;align-items:flex-start;gap:10px;margin-top:8px;font-size:11px;color:#444;line-height:1.6;}
+.step-num{color:#ff0000;font-weight:600;flex-shrink:0;}
+.highlight{color:#00ffcc;text-shadow:0 0 6px rgba(0,255,204,0.5);}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>RADIO<span>.</span></h1>
+  <div class="ssid">{{ ssid }}</div>
+  <div class="spinner"></div>
+  <div class="status" id="statusText">// VERBINDE...</div>
+  <div class="info-box">
+    <div class="step"><span class="step-num">01</span>Pi verbindet sich mit WLAN</div>
+    <div class="step"><span class="step-num">02</span>Hotspot verschwindet</div>
+    <div class="step"><span class="step-num">03</span>Handy wieder mit WLAN verbinden</div>
+    <div class="step"><span class="step-num">04</span>Öffne: <span class="highlight">http://anlage.local</span></div>
+  </div>
+</div>
+<script>
+const ssid="{{ ssid }}";
+const password="{{ password }}";
+const steps=['// SENDE DATEN...','// AUTHENTIFIZIERE...','// WARTE AUF IP...','// FAST FERTIG...'];
+let i=0;
+async function start(){
+  const fd=new FormData();
+  fd.append('ssid',ssid);
+  fd.append('password',password);
+  fetch('/setup/do_connect',{method:'POST',body:fd}).catch(()=>{});
+  const timer=setInterval(()=>{if(i<steps.length)document.getElementById('statusText').textContent=steps[i++];},4000);
+  const poll=setInterval(async()=>{
+    try{
+      const r=await fetch('/setup/status');
+      const d=await r.json();
+      if(d.connected){
+        clearInterval(timer);clearInterval(poll);
+        document.getElementById('statusText').textContent='// VERBUNDEN!';
+        document.getElementById('statusText').style.color='#00ffcc';
+        setTimeout(()=>{window.location.href='http://'+d.ip;},2000);
+      }
+    }catch(e){}
+  },2000);
+  setTimeout(()=>{
+    clearInterval(timer);clearInterval(poll);
+    document.getElementById('statusText').textContent='// JETZT anlage.local ÖFFNEN!';
+    document.getElementById('statusText').style.color='#00ffcc';
+  },25000);
+}
+start();
+</script>
+</body>
+</html>

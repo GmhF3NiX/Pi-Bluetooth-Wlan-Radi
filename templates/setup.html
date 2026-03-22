@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio Setup</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500&family=JetBrains+Mono&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;color:#ccc;font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,0,0,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,0,.05) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ff0000,#00ffcc,#ff0000,transparent);box-shadow:0 0 8px #ff0000;z-index:99;}
+.box{width:100%;max-width:400px;position:relative;z-index:1;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:64px;color:#fff;letter-spacing:6px;line-height:1;text-shadow:0 0 8px #ff0000,0 0 20px rgba(255,0,0,0.5);}
+h1 span{color:#ff0000;}
+.sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:#00ffcc;letter-spacing:4px;margin-bottom:28px;text-shadow:0 0 6px rgba(0,255,204,0.7);}
+.card{background:#0a0a0a;border:1px solid #1a0000;border-top:2px solid #ff0000;border-radius:6px;padding:24px;box-shadow:0 0 30px rgba(255,0,0,0.1);}
+label{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;color:#00ffcc;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;margin-top:16px;text-shadow:0 0 6px rgba(0,255,204,0.5);}
+label:first-of-type{margin-top:0;}
+select,input{width:100%;background:#000;border:1px solid #1a0000;border-radius:4px;padding:12px 14px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+select:focus,input:focus{border-color:#ff0000;box-shadow:0 0 6px rgba(255,0,0,0.5);}
+select option{background:#0a0a0a;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:44px;}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#444;cursor:pointer;font-size:16px;}
+.pw-toggle:hover{color:#ff0000;}
+button[type=submit]{width:100%;margin-top:20px;padding:14px;background:#ff0000;color:#fff;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;box-shadow:0 0 6px rgba(255,0,0,0.7);transition:all .2s;}
+button[type=submit]:hover{background:#ff3333;box-shadow:0 0 15px rgba(255,0,0,0.8);}
+.hint{font-family:'JetBrains Mono',monospace;font-size:10px;color:#333;margin-top:14px;text-align:center;line-height:1.8;letter-spacing:1px;}
+.hint strong{color:#00ffcc;text-shadow:0 0 6px rgba(0,255,204,0.5);}
+.refresh{display:block;text-align:center;margin-top:10px;color:#333;font-size:11px;font-family:'JetBrains Mono',monospace;cursor:pointer;background:none;border:none;letter-spacing:1px;transition:color .2s;width:100%;padding:8px 0;}
+.refresh:hover{color:#ff0000;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>RADIO<span>.</span></h1>
+  <div class="sub">// WLAN EINRICHTUNG</div>
+  <div class="card">
+    {% if error %}<div style="background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.3);color:#ff0000;padding:10px 14px;border-radius:4px;margin-bottom:14px;font-size:13px;">⚠ {{ error }}</div>{% endif %}
+    <form method="POST" action="/setup/connect">
+      <label>WLAN Netzwerk</label>
+      <select name="ssid" required>
+        <option value="">— Netzwerk wählen —</option>
+        {% for net in networks %}
+        <option value="{{ net }}">{{ net }}</option>
+        {% endfor %}
+      </select>
+      <label>Passwort</label>
+      <div class="pw-wrap">
+        <input type="password" name="password" id="pw" placeholder="WLAN Passwort">
+        <button type="button" class="pw-toggle" onclick="document.getElementById('pw').type=document.getElementById('pw').type==='password'?'text':'password'">👁</button>
+      </div>
+      <button type="submit">VERBINDEN →</button>
+    </form>
+    <button class="refresh" onclick="location.reload()">↺ NETZWERKE NEU LADEN</button>
+    <p class="hint">Nach dem Verbinden erreichbar unter<br><strong>http://anlage.local</strong></p>
+  </div>
+</div>
+</body>
+</html>

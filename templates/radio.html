@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Radio by Olli</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#000;--panel:#0a0a0a;--border:#1a0000;--red:#ff0000;--red2:#ff3333;--teal:#00ffcc;--txt:#ccc;--muted:#444;--glow-red:0 0 8px #ff0000,0 0 20px rgba(255,0,0,0.5);--glow-teal:0 0 8px #00ffcc,0 0 20px rgba(0,255,204,0.5);--glow-red-sm:0 0 6px rgba(255,0,0,0.7);--glow-teal-sm:0 0 6px rgba(0,255,204,0.7);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,0,0,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,0,.05) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),var(--teal),var(--red),transparent);box-shadow:var(--glow-red);z-index:999;}
+.app{max-width:480px;margin:0 auto;padding:24px 16px 100px;position:relative;z-index:1;}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);position:relative;}
+.header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--red),transparent);box-shadow:var(--glow-red-sm);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:64px;color:#fff;letter-spacing:6px;line-height:1;text-shadow:var(--glow-red);}
+.logo span{color:var(--red);}
+.byline{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);letter-spacing:4px;margin-top:3px;text-shadow:var(--glow-teal-sm);}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:10px;}
+.wifi-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--teal);border:1px solid rgba(0,255,204,.35);background:rgba(0,255,204,.04);padding:3px 10px;border-radius:2px;box-shadow:var(--glow-teal-sm);text-shadow:var(--glow-teal-sm);}
+.settings-btn{background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.settings-btn:hover{border-color:var(--red);color:var(--red);box-shadow:var(--glow-red-sm);}
+.settings-panel{display:none;background:var(--panel);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:4px;padding:14px;margin-bottom:14px;}
+.settings-panel.open{display:block;}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.setting-row:last-child{border-bottom:none;}
+.s-btn{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 12px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:2px;cursor:pointer;transition:all .2s;}
+.s-btn:hover{border-color:var(--red);color:var(--red);box-shadow:var(--glow-red-sm);}
+.now-playing{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden;}
+.now-playing::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--red),var(--teal),var(--red));transform:scaleX(0);transform-origin:left;transition:transform .5s;box-shadow:0 0 12px var(--red);}
+.now-playing.playing::before{transform:scaleX(1);}
+.np-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+.pulse.active{background:var(--red);box-shadow:var(--glow-red);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.7)}}
+.np-logo-fallback{width:56px;height:56px;border-radius:10px;background:#0d0000;border:1px solid #330000;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:10px;}
+.np-name{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#fff;letter-spacing:2px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.np-genre{font-size:11px;color:var(--muted);margin-bottom:18px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;}
+.controls{display:flex;gap:14px;align-items:center;}
+.btn-play{width:54px;height:54px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--glow-red),0 4px 20px rgba(255,0,0,0.5);transition:all .2s;}
+.btn-play:hover{background:var(--red2);transform:scale(1.08);}
+.btn-play:active{transform:scale(.93);}
+.vol-container{flex:1;}
+.vol-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;display:flex;justify-content:space-between;margin-bottom:8px;}
+.vol-val{color:var(--teal);text-shadow:var(--glow-teal-sm);}
+.vol-slider{width:100%;-webkit-appearance:none;height:3px;border-radius:2px;background:#1a0000;outline:none;cursor:pointer;}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--teal);box-shadow:var(--glow-teal);cursor:pointer;}
+.bt-btn{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;cursor:pointer;margin-bottom:14px;transition:all .2s;}
+.bt-btn:hover{border-color:var(--teal);}
+.bt-btn.active{border-color:var(--teal);background:rgba(0,255,204,.04);box-shadow:0 0 20px rgba(0,255,204,.15);}
+.bt-left{display:flex;align-items:center;gap:12px;}
+.bt-icon-wrap{font-size:20px;}
+.bt-name{font-size:14px;color:#fff;font-weight:500;}
+.bt-sub{font-size:10px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
+.bt-toggle{width:44px;height:24px;background:#1a0000;border:1px solid #330000;border-radius:12px;position:relative;transition:all .3s;}
+.bt-btn.active .bt-toggle{background:rgba(0,255,204,.15);border-color:var(--teal);box-shadow:var(--glow-teal-sm);}
+.bt-toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:var(--muted);border-radius:50%;transition:all .3s;}
+.bt-btn.active .bt-toggle::after{transform:translateX(20px);background:var(--teal);box-shadow:var(--glow-teal);}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--red);letter-spacing:4px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;text-shadow:var(--glow-red-sm);}
+.add-btn{background:none;border:1px solid #330000;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;border-radius:2px;cursor:pointer;transition:all .2s;}
+.add-btn:hover{border-color:var(--red);color:var(--red);}
+.genre-filter{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:10px;scrollbar-width:none;}
+.genre-filter::-webkit-scrollbar{display:none;}
+.genre-chip{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;padding:5px 12px;border-radius:2px;border:1px solid #1a0000;color:var(--muted);white-space:nowrap;cursor:pointer;transition:all .15s;background:none;}
+.genre-chip.active{background:rgba(255,0,0,.12);color:var(--red);border-color:var(--red);box-shadow:var(--glow-red-sm);text-shadow:var(--glow-red-sm);}
+.stations-list{display:flex;flex-direction:column;gap:6px;}
+.station-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.station-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--red);box-shadow:var(--glow-red-sm);transform:scaleY(0);transition:transform .2s;}
+.station-item:hover{border-color:#330000;background:rgba(255,0,0,.03);}
+.station-item:hover::before,.station-item.active::before{transform:scaleY(1);}
+.station-item.active{border-color:rgba(255,0,0,.5);background:rgba(255,0,0,.06);box-shadow:0 0 20px rgba(255,0,0,.1);}
+.station-logo-fb{width:44px;height:44px;border-radius:8px;background:#0d0000;border:1px solid #330000;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .2s;}
+.station-item.active .station-logo-fb{border-color:var(--red);box-shadow:var(--glow-red-sm);}
+.station-info{flex:1;min-width:0;}
+.station-name{font-size:14px;color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.station-genre{font-size:10px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
+.bars{display:none;align-items:flex-end;gap:2px;height:16px;}
+.station-item.active .bars{display:flex;}
+.bar{width:3px;background:var(--red);border-radius:2px;box-shadow:var(--glow-red-sm);animation:bar .8s ease infinite;}
+.bar:nth-child(1){height:8px;animation-delay:0s;}
+.bar:nth-child(2){height:14px;animation-delay:.2s;}
+.bar:nth-child(3){height:6px;animation-delay:.4s;}
+@keyframes bar{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.2)}}
+.station-del{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:4px 8px;opacity:0;transition:all .2s;}
+.station-item:hover .station-del{opacity:1;}
+.station-del:hover{color:var(--red);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:100;align-items:flex-end;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--panel);border:1px solid #330000;border-top:2px solid var(--red);border-radius:12px 12px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;margin:0 auto;animation:slideUp .3s ease;box-shadow:0 -10px 50px rgba(255,0,0,.2);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;letter-spacing:3px;margin-bottom:18px;text-shadow:var(--glow-red);}
+.form-label{font-size:9px;color:var(--teal);letter-spacing:2px;margin-bottom:6px;margin-top:14px;display:block;font-family:'JetBrains Mono',monospace;}
+.form-label:first-of-type{margin-top:0;}
+.form-input{width:100%;background:#050505;border:1px solid #1a0000;border-radius:4px;padding:11px 14px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.form-input:focus{border-color:var(--red);box-shadow:var(--glow-red-sm);}
+.modal-actions{display:flex;gap:10px;margin-top:18px;}
+.btn-primary{flex:1;padding:13px;background:var(--red);color:#fff;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;box-shadow:var(--glow-red-sm);transition:all .2s;}
+.btn-primary:hover{background:var(--red2);}
+.btn-cancel{padding:13px 20px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;}
+.footer{text-align:center;padding-top:30px;margin-top:24px;position:relative;}
+.footer::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--red),transparent);box-shadow:var(--glow-red-sm);}
+.footer-text{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;}
+.footer-heart{color:var(--red);text-shadow:var(--glow-red-sm);}
+.footer-name{color:var(--teal);text-shadow:var(--glow-teal-sm);font-weight:600;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel);border:1px solid var(--red);color:var(--red);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;padding:10px 20px;border-radius:3px;transition:transform .3s ease;z-index:200;white-space:nowrap;box-shadow:var(--glow-red-sm);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+<div><div class="logo">RADIO<span>.</span></div><div class="byline">// by Olli</div></div>
+<div class="header-right">
+<div class="wifi-badge">&#9679; {{ ssid or 'ONLINE' }}</div>
+<button class="settings-btn" onclick="toggleSettings()">&#9881;</button>
+</div>
+</div>
+<div class="settings-panel" id="settingsPanel">
+<div class="setting-row"><span>WLAN wechseln</span><button class="s-btn" onclick="if(confirm('WLAN zurücksetzen?'))location.href='/setup/reset'">RESET</button></div>
+<div class="setting-row"><span>Neustart</span><button class="s-btn" onclick="if(confirm('Neustart?'))fetch('/reboot')">REBOOT</button></div>
+<div class="setting-row"><span style="color:var(--muted);font-size:11px;font-family:'JetBrains Mono',monospace;">Pi Radio v1.0 — by Olli</span></div>
+</div>
+<div class="now-playing" id="nowPlaying">
+<div class="np-label"><div class="pulse" id="pulse"></div>// JETZT LÄUFT</div>
+<div id="npLogoWrap"><div class="np-logo-fallback">📻</div></div>
+<div class="np-name" id="npName">— Sender wählen —</div>
+<div class="np-genre" id="npGenre">// tippe unten auf einen sender</div>
+<div class="controls">
+<button class="btn-play" id="playBtn" onclick="togglePlay()">&#9654;</button>
+<div class="vol-container">
+<div class="vol-label"><span>// LAUTSTÄRKE</span><span class="vol-val" id="volVal">80%</span></div>
+<input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="80" step="1" oninput="updateVolume(this.value)">
+</div>
+</div>
+</div>
+<div class="bt-btn" id="btBtn" onclick="toggleBluetooth()">
+<div class="bt-left"><div class="bt-icon-wrap">🔊</div><div><div class="bt-name">Bluetooth</div><div class="bt-sub" id="btSub">// koppeln — "Anlage"</div></div></div>
+<div class="bt-toggle"></div>
+</div>
+<div class="section-label">// SENDER<button class="add-btn" onclick="openModal()">+ NEU</button></div>
+<div class="genre-filter">
+<button class="genre-chip active" onclick="filterGenre('',this)">ALLE</button>
+<button class="genre-chip" onclick="filterGenre('Pop',this)">POP</button>
+<button class="genre-chip" onclick="filterGenre('Rock',this)">ROCK</button>
+<button class="genre-chip" onclick="filterGenre('News',this)">NEWS</button>
+<button class="genre-chip" onclick="filterGenre('Jazz',this)">JAZZ</button>
+<button class="genre-chip" onclick="filterGenre('Klassik',this)">KLASSIK</button>
+<button class="genre-chip" onclick="filterGenre('Electronic',this)">ELECTRONIC</button>
+</div>
+<div class="stations-list" id="stationsList"></div>
+<div class="footer"><div class="footer-text">MADE WITH <span class="footer-heart">&#9829;</span> BY <span class="footer-name">OLLI</span></div></div>
+</div>
+<div class="modal-overlay" id="modal" onclick="closeModalBg(event)">
+<div class="modal">
+<div class="modal-title">// SENDER HINZUFÜGEN</div>
+<label class="form-label">Name</label><input class="form-input" type="text" id="newName" placeholder="z.B. RADIO BOB">
+<label class="form-label">Stream URL</label><input class="form-input" type="url" id="newUrl" placeholder="http://stream...mp3">
+<label class="form-label">Genre</label><input class="form-input" type="text" id="newGenre" placeholder="Pop / Rock / Jazz">
+<div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">Abbrechen</button><button class="btn-primary" onclick="addStation()">SPEICHERN →</button></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const ICONS={'1LIVE':'📻','WDR 2':'🎙️','Bayern 3':'🎵','NDR 2':'🌊','Deutschlandfunk':'📰','sunshine live':'☀️','sunshine 90er':'🕹️','Jazz Radio':'🎷','Klassik Radio':'🎻'};
+const getIcon=n=>ICONS[n]||'📻';
+let stations=[],currentStation=null,isPlaying=false,isBT=false,currentGenre='',volTimer=null;
+async function init(){await loadStations();await refreshStatus();setInterval(refreshStatus,5000);}
+async function loadStations(){stations=await(await fetch('/stations')).json();renderStations();}
+function renderStations(){const list=document.getElementById('stationsList');list.innerHTML='';const f=stations.filter(s=>!currentGenre||s.genre===currentGenre);if(!f.length){list.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);font-size:11px;font-family:\'JetBrains Mono\',monospace;">// KEINE SENDER</div>';return;}f.forEach(s=>{const ri=stations.indexOf(s);const active=currentStation===ri&&isPlaying;const el=document.createElement('div');el.className='station-item'+(active?' active':'');el.innerHTML=`<div class="station-logo-fb">${getIcon(s.name)}</div><div class="station-info"><div class="station-name">${s.name}</div><div class="station-genre">// ${(s.genre||'RADIO').toUpperCase()}</div></div><div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div><button class="station-del" onclick="delStation(event,${ri})">✕</button>`;el.addEventListener('click',()=>playStation(ri));list.appendChild(el);});}
+async function playStation(idx){if(isBT){toast('// BT AKTIV');return;}const d=await(await fetch(`/play/${idx}`)).json();if(d.status==='playing'){currentStation=idx;isPlaying=true;updateNowPlaying();renderStations();}}
+async function togglePlay(){if(isPlaying){await fetch('/stop');isPlaying=false;updateNowPlaying();renderStations();}else if(currentStation!==null)playStation(currentStation);}
+function updateNowPlaying(){const btn=document.getElementById('playBtn'),pulse=document.getElementById('pulse'),np=document.getElementById('nowPlaying');if(isPlaying&&currentStation!==null){const s=stations[currentStation];document.getElementById('npName').textContent=s.name;document.getElementById('npGenre').textContent='// '+(s.genre||'RADIO').toUpperCase();document.getElementById('npLogoWrap').innerHTML=`<div class="np-logo-fallback">${getIcon(s.name)}</div>`;btn.textContent='■';pulse.classList.add('active');np.classList.add('playing');}else{document.getElementById('npName').textContent='— Sender wählen —';document.getElementById('npGenre').textContent='// tippe unten auf einen sender';document.getElementById('npLogoWrap').innerHTML='<div class="np-logo-fallback">📻</div>';btn.textContent='▶';pulse.classList.remove('active');np.classList.remove('playing');}}
+async function refreshStatus(){try{const d=await(await fetch('/status')).json();isPlaying=d.playing;isBT=d.bt_mode;if(d.station!==null)currentStation=d.station;document.getElementById('volSlider').value=Math.round(d.volume);document.getElementById('volVal').textContent=Math.round(d.volume)+'%';updateNowPlaying();updateBTButton();renderStations();}catch(e){}}
+function updateVolume(v){document.getElementById('volVal').textContent=Math.round(v)+'%';clearTimeout(volTimer);volTimer=setTimeout(()=>fetch(`/volume/${v}`),300);}
+async function toggleBluetooth(){if(!isBT){await fetch('/bluetooth/on');isBT=true;isPlaying=false;updateNowPlaying();toast('// BT AKTIV — suche "Anlage"');}else{await fetch('/bluetooth/off');isBT=false;toast('// BT DEAKTIVIERT');}updateBTButton();}
+function updateBTButton(){const btn=document.getElementById('btBtn'),sub=document.getElementById('btSub');if(isBT){btn.classList.add('active');sub.textContent='// aktiv — gekoppelt';sub.style.color='var(--teal)';}else{btn.classList.remove('active');sub.textContent='// koppeln — "Anlage"';sub.style.color='';}}
+function filterGenre(g,el){currentGenre=g;document.querySelectorAll('.genre-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderStations();}
+function openModal(){document.getElementById('modal').classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');['newName','newUrl','newGenre'].forEach(id=>document.getElementById(id).value='');}
+function closeModalBg(e){if(e.target===document.getElementById('modal'))closeModal();}
+async function addStation(){const name=document.getElementById('newName').value.trim();const url=document.getElementById('newUrl').value.trim();const genre=document.getElementById('newGenre').value.trim();if(!name||!url){toast('// Name und URL fehlen');return;}await fetch('/stations/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,url,genre})});await loadStations();closeModal();toast('// SENDER GESPEICHERT');}
+async function delStation(e,idx){e.stopPropagation();if(!confirm(`"${stations[idx].name}" löschen?`))return;if(currentStation===idx){await fetch('/stop');isPlaying=false;currentStation=null;updateNowPlaying();}await fetch(`/stations/delete/${idx}`,{method:'DELETE'});await loadStations();}
+function toggleSettings(){document.getElementById('settingsPanel').classList.toggle('open');}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+init();
+</script>
+</body>
+</html>
