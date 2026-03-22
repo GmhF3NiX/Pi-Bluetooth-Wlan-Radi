@@ -81,7 +81,7 @@ sudo apt update && sudo apt upgrade -y
 ### 4️⃣ Pi Radio installieren — **Ein Befehl!**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radio/main/install.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radi/main/install.sh | sudo bash
 ```
 
 ### 5️⃣ Neu starten
@@ -173,7 +173,7 @@ Webinterface → ⚙ Einstellungen → WLAN RESET
 ## 📁 Projektstruktur
 
 ```
-Pi-Bluetooth-Wlan-Radio/
+Pi-Bluetooth-Wlan-Radi/
 ├── install.sh              # Komplettes Install-Script
 ├── radio.py                # Flask Webserver & Logik
 ├── templates/
@@ -224,7 +224,7 @@ MIT License — mach damit was du willst! 🤘
 
 *Wochenlang debuggt, damit du es in 5 Minuten installieren kannst.*
 
-[![GitHub stars](https://img.shields.io/github/stars/GmhF3NiX/Pi-Bluetooth-Wlan-Radio?style=social)](https://github.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radio/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/GmhF3NiX/Pi-Bluetooth-Wlan-Radi?style=social)](https://github.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radi/stargazers)
 
 </div>
 
