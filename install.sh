@@ -99,6 +99,15 @@ EOF
 systemctl disable dnsmasq 2>/dev/null || true
 success "DHCP/DNS konfiguriert"
 
+# ── NetworkManager: uap0 ignorieren ─────────────────────────
+info "NetworkManager konfigurieren..."
+mkdir -p /etc/NetworkManager/conf.d
+cat > /etc/NetworkManager/conf.d/unmanaged.conf << 'EOF'
+[keyfile]
+unmanaged-devices=interface-name:uap0
+EOF
+success "uap0 aus NetworkManager ausgeschlossen"
+
 # ── Scripts erstellen ────────────────────────────────────────
 info "Erstelle Scripts..."
 
@@ -141,7 +150,7 @@ success "Scripts erstellt"
 # ── Dateien von GitHub laden ─────────────────────────────────
 info "Lade Radio App von GitHub..."
 
-BASE_URL="https://raw.githubusercontent.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radio/main"
+BASE_URL="https://raw.githubusercontent.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radi/main"
 
 curl -sSL "$BASE_URL/radio.py" -o /opt/radio/radio.py
 curl -sSL "$BASE_URL/templates/radio.html" -o /opt/radio/templates/radio.html
