@@ -205,7 +205,7 @@ def setup_connect():
     if not ssid:
         return redirect("/setup?error=Bitte+ein+Netzwerk+wählen")
 
-    return render_template("connecting.html", ssid=ssid)
+    return render_template("connecting.html", ssid=ssid, password=password)
 
 @app.route("/setup/do_connect", methods=["POST"])
 def do_connect():
