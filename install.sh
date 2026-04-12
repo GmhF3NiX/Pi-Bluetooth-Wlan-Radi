@@ -152,6 +152,7 @@ info "Hostname konfigurieren..."
 echo "anlage" > /etc/hostname
 sed -i 's/127.0.1.1.*/127.0.1.1 anlage anlage/' /etc/hosts
 hostnamectl set-hostname anlage 2>/dev/null || true
+echo "preserve_hostname: true" >> /etc/cloud/cloud.cfg
 systemctl enable avahi-daemon
 success "Hostname gesetzt: anlage.local"
 
