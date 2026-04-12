@@ -128,20 +128,12 @@ def scan_wifi():
 
 # ── WLAN verbinden ───────────────────────────────
 def connect_wifi(ssid, password):
-    wpa = f"""ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-update_config=1
-country=DE
-
-network={{
-    ssid="{ssid}"
-    psk="{password}"
-    key_mgmt=WPA-PSK
-}}
-"""
-    with open("/etc/wpa_supplicant/wpa_supplicant.conf", "w") as f:
-        f.write(wpa)
-
-    subprocess.run(["sudo", "wpa_cli", "-i", "wlan0", "reconfigure"], capture_output=True)
+    subprocess.run(["sudo", "nmcli", "con", "delete", ssid], capture_output=True)
+    subprocess.run(
+        ["sudo", "nmcli", "dev", "wifi", "connect", ssid,
+         "password", password, "ifname", "wlan0"],
+        capture_output=True, timeout=30
+    )
     time.sleep(5)
 
     # IP check
@@ -243,10 +235,17 @@ def setup_status():
 @app.route("/setup/reset")
 def setup_reset():
     save_config({"connected": False, "ssid": "", "password": ""})
-    # wpa_supplicant zurücksetzen
-    with open("/etc/wpa_supplicant/wpa_supplicant.conf", "w") as f:
-        f.write("ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=DE\n")
-    subprocess.run(["sudo", "reboot"], capture_output=True)
+    def do_reset():
+        time.sleep(1)
+        # NetworkManager WLAN-Profile löschen
+        result = subprocess.run(["sudo", "nmcli", "-t", "-f", "NAME,TYPE", "con", "show"],
+                                capture_output=True, text=True)
+        for line in result.stdout.strip().split("\n"):
+            if ":802-11-wireless" in line:
+                name = line.split(":")[0]
+                subprocess.run(["sudo", "nmcli", "con", "delete", name], capture_output=True)
+        subprocess.run(["sudo", "reboot"])
+    threading.Thread(target=do_reset, daemon=True).start()
     return "Restarting..."
 
 # ════════════════════════════════════════════════
@@ -335,6 +334,33 @@ def delete_station(idx):
         stations.pop(idx)
         save_stations(stations)
     return jsonify({"status": "ok"})
+
+@app.route("/ha/state")
+def ha_state():
+    stations = load_stations()
+    name = stations[state["station"]]["name"] if state["station"] is not None and state["playing"] else None
+    genre = stations[state["station"]]["genre"] if state["station"] is not None and state["playing"] else None
+    return jsonify({
+        "state": "playing" if state["playing"] else "idle",
+        "media_title": name,
+        "media_content_id": str(state["station"]) if state["station"] is not None else None,
+        "media_content_type": "music",
+        "genre": genre,
+        "volume_level": round(state["volume"] / 100, 2),
+        "bt_mode": state["bt_mode"],
+        "spotify_mode": state["spotify_mode"],
+        "stations": [{"id": i, "name": s["name"], "genre": s["genre"]} for i, s in enumerate(stations)],
+    })
+
+@app.route("/ha/play/<int:station_id>")
+def ha_play(station_id):
+    stations = load_stations()
+    if 0 <= station_id < len(stations):
+        s = stations[station_id]
+        state["station"] = station_id
+        threading.Thread(target=play_station, args=(s["url"],), daemon=True).start()
+        return jsonify({"status": "playing", "station": s["name"]})
+    return jsonify({"status": "error"}), 404
 
 @app.route("/reboot")
 def reboot():
