@@ -147,6 +147,14 @@ chmod +x /usr/local/bin/check-wifi.sh
 
 success "Scripts erstellt"
 
+# ── Hostname + mDNS (anlage.local) ──────────────────────────
+info "Hostname konfigurieren..."
+echo "anlage" > /etc/hostname
+sed -i 's/127.0.1.1.*/127.0.1.1 anlage anlage/' /etc/hosts
+hostnamectl set-hostname anlage 2>/dev/null || true
+systemctl enable avahi-daemon
+success "Hostname gesetzt: anlage.local"
+
 # ── Dateien von GitHub laden ─────────────────────────────────
 info "Lade Radio App von GitHub..."
 
@@ -158,6 +166,20 @@ curl -sSL "$BASE_URL/templates/setup.html" -o /opt/radio/templates/setup.html
 curl -sSL "$BASE_URL/templates/connecting.html" -o /opt/radio/templates/connecting.html
 
 success "Radio App geladen"
+
+# ── Raspotify (Spotify Connect) ─────────────────────────────
+info "Installiere Raspotify (Spotify Connect)..."
+curl -sSL https://dtcooper.github.io/raspotify/install.sh | sh || warn "Raspotify Installation fehlgeschlagen — manuell nachholen"
+
+if [ -f /etc/raspotify/conf ]; then
+  sed -i 's/#LIBRESPOT_NAME=.*/LIBRESPOT_NAME="Pi-Radio"/' /etc/raspotify/conf
+  sed -i 's/#LIBRESPOT_BITRATE=.*/LIBRESPOT_BITRATE="320"/' /etc/raspotify/conf
+  echo 'LIBRESPOT_DEVICE_TYPE="speaker"' >> /etc/raspotify/conf
+fi
+
+systemctl disable raspotify 2>/dev/null || true
+systemctl stop raspotify 2>/dev/null || true
+success "Raspotify installiert (Gerätename: Pi-Radio)"
 
 # ── Systemd Services ─────────────────────────────────────────
 info "Erstelle Systemd Services..."
