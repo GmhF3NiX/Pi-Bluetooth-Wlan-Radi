@@ -93,11 +93,12 @@ Falls nicht: **`http://192.168.4.1`** eingeben
 2. WLAN-Passwort eingeben
 3. **Verbinden** klicken
 
-### Schritt 4 — Fertig!
+### Schritt 4 — IP notieren!
 
-Nach ca. 30 Sekunden ist der Pi mit deinem WLAN verbunden und erreichbar unter:
+Nach ca. 30 Sekunden erscheint die **IP-Adresse** des Pi groß auf dem Bildschirm — diese notieren oder kopieren.
 
-> **`http://anlage.local`**
+> **Zuhause im Heimnetz:** `http://anlage.local`  
+> **Falls anlage.local nicht funktioniert** (z.B. Firmen- oder Gastnetz): die angezeigte IP direkt verwenden, z.B. `http://172.18.124.125`
 
 ---
 
@@ -139,9 +140,9 @@ Lautstärke über den Schieberegler anpassen.
 
 Der Pi spielt jetzt deinen Spotify-Stream — das Handy kann gesperrt werden.
 
-### Unterwegs / auf Arbeit (mit Tailscale)
+### Unterwegs / auf Arbeit (optional: Tailscale)
 
-Spotify Connect funktioniert normalerweise nur im Heimnetz. Mit **Tailscale** geht es überall.
+Zuhause im Heimnetz funktioniert Spotify Connect ohne weitere Einrichtung. In Firmen- oder Gastnetzwerken wird mDNS oft blockiert — mit **Tailscale** geht es trotzdem.
 
 #### Schritt 1 — Tailscale Account erstellen
 
@@ -269,6 +270,7 @@ cards:
 | Situation | Adresse |
 |-----------|---------|
 | Heimnetz | `http://anlage.local` |
+| anlage.local geht nicht | IP-Adresse aus dem Setup verwenden |
 | Kein WLAN gespeichert | Hotspot `Pi-Radio-Setup` → `http://192.168.4.1` |
 | Unterwegs mit Tailscale | Tailscale-IP des Pi |
 
