@@ -4,8 +4,6 @@
 
 > Verwandle deinen Raspberry Pi Zero 2W in ein vollwertiges Internetradio mit Weboberfläche, Spotify Connect und Bluetooth — alles über den Browser steuerbar.
 
-![Radio Interface](https://raw.githubusercontent.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radi/main/screenshots/radio.png)
-
 ---
 
 ## ✨ Features
@@ -85,8 +83,6 @@ Auf deinem Handy oder Laptop:
 Browser öffnen → Die Seite öffnet sich automatisch.  
 Falls nicht: **`http://192.168.4.1`** eingeben
 
-![Setup Seite](https://raw.githubusercontent.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radi/main/screenshots/setup.png)
-
 ### Schritt 3 — WLAN auswählen
 
 1. Dein Heimnetzwerk aus der Liste wählen
@@ -103,8 +99,6 @@ Nach ca. 30 Sekunden erscheint die **IP-Adresse** des Pi groß auf dem Bildschir
 ---
 
 ## 🎛️ Weboberfläche
-
-![Radio Interface](https://raw.githubusercontent.com/GmhF3NiX/Pi-Bluetooth-Wlan-Radi/main/screenshots/radio.png)
 
 ### Sender wählen
 
@@ -293,6 +287,16 @@ cards:
 **Spotify verbindet sich nicht?**
 - Raspotify läuft? `sudo systemctl status raspotify`
 - Tailscale aktiv? `tailscale status`
+
+---
+
+---
+
+## ☕ Unterstützen
+
+Wenn dir das Projekt gefällt und du mich unterstützen möchtest:
+
+[![Spenden via PayPal](https://img.shields.io/badge/💸%20Spenden-PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/rapidr3dde)
 
 ---
 
