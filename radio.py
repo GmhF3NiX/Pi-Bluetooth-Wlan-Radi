@@ -141,7 +141,7 @@ def connect_wifi(ssid, password):
         result = subprocess.run(["hostname", "-I"], capture_output=True, text=True)
         ips = result.stdout.strip().split()
         # Nur echte IPs (nicht AP IP 192.168.4.x)
-        real = [ip for ip in ips if not ip.startswith("192.168.4.")]
+        real = [ip for ip in ips if not ip.startswith("192.168.4.") and not ip.startswith("100.") and ":" not in ip and ip]
         if real:
             save_config({"ssid": ssid, "password": password, "connected": True})
             return True
@@ -227,7 +227,7 @@ def do_connect():
 def setup_status():
     result = subprocess.run(["hostname", "-I"], capture_output=True, text=True)
     ips = result.stdout.strip().split()
-    real = [ip for ip in ips if not ip.startswith("192.168.4.") and ip]
+    real = [ip for ip in ips if not ip.startswith("192.168.4.") and not ip.startswith("100.") and ":" not in ip and ip]
     if real:
         return jsonify({"connected": True, "ip": real[0]})
     return jsonify({"connected": False})
